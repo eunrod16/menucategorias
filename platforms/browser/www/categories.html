@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/onsenui/css/onsenui.css"/>
+    <link rel="stylesheet" href="css/categories.css"/>
+    <link rel="stylesheet" href="/onsenui/css/onsen-css-components.css"/>
+    <script src="/onsenui/js/onsenui.js"></script>
+    <script type="text/javascript" src="js/sqlite.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+  </head>
+
+  <body>
+    <ons-page>
+    <ons-toolbar>
+
+      <div class="left">
+        <ons-back-button id="btn-back">Regresar</ons-back-button>
+      </div>
+      <div class="center">Elige una categoría</div>
+      <!--
+      <div class="right">
+        <ons-toolbar-button>
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+    -->
+    </ons-toolbar>
+    <div style="text-align:center;">
+      <ons-row>
+        <ons-col width="33vw" class="cell" >
+          <div class="categorie">
+            <img class="thumbnail" src="http://placekitten.com/g/120/120">
+            <span class="caption">Cutest kitty</span>
+          </div>
+
+        </ons-col>
+        <ons-col width="34vw" class="cell" tappable>
+          <div class="categorie">
+            <img class="thumbnail" src="http://placekitten.com/g/120/120">
+            <span class="caption">Cutest kitty</span>
+          </div>
+        </ons-col>
+        <ons-col width="33vw" class="cell" tappable>
+          <div class="categorie">
+            <img class="thumbnail" src="http://placekitten.com/g/120/120">
+            <span class="caption">Cutest kitty</span>
+          </div>
+        </ons-col>
+      </ons-row>
+      <ons-row>
+        <ons-col width="33vw" class="cell" >
+          <div class="categorie">
+            <img class="thumbnail" src="http://placekitten.com/g/120/120">
+            <span class="caption">Cutest kitty</span>
+          </div>
+
+        </ons-col>
+        <ons-col width="34vw" class="cell" tappable>
+          <div class="categorie">
+            <img class="thumbnail" src="http://placekitten.com/g/120/120">
+            <span class="caption">Cutest kitty</span>
+          </div>
+        </ons-col>
+        <ons-col width="33vw" class="cell" tappable>
+          <div class="categorie">
+            <img class="thumbnail" src="http://placekitten.com/g/120/120">
+            <span class="caption">Cutest kitty</span>
+          </div>
+        </ons-col>
+      </ons-row>
+
+
+    </div>
+
+
+  </ons-page>
+
+<div id="lista"></div>
+
+  <script
+    src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+  <script src="/js/categories.js"></script>
+  <script type="text/javascript" charset="utf-8">
+      $(document).ready(function () {
+           document.addEventListener("deviceready", onDeviceReady, true);
+      });
+
+      function onDeviceReady() {
+        alert("OK");
+        var db = window.sqlitePlugin.openDatabase({name: 'app.db', location: 'default'});
+          db.transaction(CrearDB, errorDB);
+      }
+
+
+      function CrearDB(tx,res) {
+        alert("BD");
+           tx.executeSql('CREATE TABLE IF NOT EXISTS categorias( nombre TEXT NOT NULL, categoria_padre TEXT NULL)');
+           //tx.executeSql('INSERT INTO categorias VALUES (?,?)', ['Ropa', NULL]);
+          // tx.executeSql('INSERT INTO categorias VALUES (?,?)', ['Personas', NULL]);
+          alert(res);
+           tx.executeSql('SELECT * FROM categorias', [], ListarDB, errorDB);
+      }
+
+
+   function errorDB(tx, err) {
+       alert("Error de SQL: "+err);
+   }
+
+
+   //Consultamos todos los registros de la tabla contactos y el resultado lo utilizamos en un funcion ListarDBfunction ConsultarDB(tx) {
+
+
+
+   //La funcion ListarDB recibe el parametro de transaccion y el recordset con el contenido de la consultar, recorremos el recordset y extraemos cada campo, generamos un listado html y luego lo mostramos en un div con identificador lista a tra ves de innerHtml de manera dinámica.
+       function ListarDB(tx, results) {
+         alert("LIST");
+         var len = results.rows.length;
+         var listado ='';
+        listado=listado.concat("Listado: " + len + " contactos");
+         for (var i=0; i<len; i++){
+        listado=listado.concat('<br>'+results.rows.item(i).nombre;
+
+         }
+        document.getElementById('lista').innerHTML =listado;
+       }
+
+
+  </script>
+
+  </body>
+</html>
