@@ -31,9 +31,7 @@
 
       </ons-row>
 
-
     </div>
-
 
   </ons-page>
 
@@ -51,14 +49,15 @@
 
   function onDeviceReady() {
     alert("OK");
-    var db = window.sqlitePlugin.openDatabase({name: 'tesis.db', location: 'default'});
-      db.transaction(CrearDB, errorDB);
+
+var db = window.sqlitePlugin.openDatabase({name: "my.db", location: 2, createFromLocation: 1});
+ db.transaction(CrearDB, errorDB);
   }
 
 
   function CrearDB(tx) {
     alert("BD");
-       tx.executeSql('CREATE TABLE IF NOT EXISTS categorias( nombre TEXT NOT NULL, categoria_padre INTEGER NOT NULL)');
+       tx.executeSql('CREATE TABLE IF NOT EXISTS categorias( nombre TEXT NOT NULL, categoria_padre INTEGER NOT NULL, imagen TEXT NOT NULL)');
        tx.executeSql('SELECT * FROM categorias WHERE nombre=? or nombre=? ', ['Ropa','Familia'], Insert, errorDB);
        tx.executeSql('SELECT * FROM categorias', [], ListarDB, errorDB);
   }
@@ -72,8 +71,8 @@ function Insert(tx, results) {
   var len = results.rows.length;
   if(len == 0){
     alert("CREAR BD");
-    tx.executeSql('INSERT INTO categorias VALUES (?,?)', ['Ropa', 0]);
-    tx.executeSql('INSERT INTO categorias VALUES (?,?)', ['Familia', 0]);
+    tx.executeSql('INSERT INTO categorias VALUES (?,?,?)', ['Ropa', 0,'img/ropa.jpg']);
+    tx.executeSql('INSERT INTO categorias VALUES (?,?,?)', ['Familia', 0,'img/familia.jpg']);
     tx.executeSql('SELECT * FROM categorias', [], ListarDB, errorDB);
   }
 
@@ -85,10 +84,21 @@ function ListarDB(tx, results) {
   var listado ='';
  for (var i=0; i<len; i++){
 listado=listado.concat('<ons-col width="34vw" class="cell" tappable>'+
-'<div class="categorie">  <img class="thumbnail" src="http://placekitten.com/g/120/120">'+
+'<div class="categorie">  <img class="thumbnail" src="'+results.rows.item(i).imagen+'">'+
 '<span class="caption">'+results.rows.item(i).nombre+'</span></div></ons-col>');
  }
  document.getElementById('lista').innerHTML =listado;
+
+
+ /*var base64_string = "";
+ var img = document.createElement("img");
+ // added `width` , `height` properties to `img` attributes
+ img.width = "250px";
+ img.height = "250px";
+ img.src = "data:image/png;base64," + base64_string;
+ var preview = document.getElementById("img_preview");
+ preview.appendChild(img);
+*/
 }
 
 
