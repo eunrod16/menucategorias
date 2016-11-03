@@ -43,12 +43,14 @@
     crossorigin="anonymous"></script>
   <script src="js/categories.js"></script>
   <script type="text/javascript" charset="utf-8">
-function funcion(param){
-  var cars = ["Saab", "Volvo", "BMW"];
-  window.localStorage.setItem('param', param);
-  window.localStorage.setItem('cars', cars);
-  alert(cars[1]);
-  window.location.replace("juego.html");
+    var palabras ='';
+    var imagenes ='';
+    var param;
+function funcion(value){
+    param = value;
+    var db = window.sqlitePlugin.openDatabase({name: "pruebas.db", location: 'default'});
+    db.transaction(select, errorDB);
+
 }
 
   $(document).ready(function () {
@@ -56,10 +58,30 @@ function funcion(param){
   });
 
   function onDeviceReady() {
-    var db = window.sqlitePlugin.openDatabase({name: "pruebas.db", location: 'default'});
-    db.transaction(CrearDB, errorDB);
+        var db = window.sqlitePlugin.openDatabase({name: "pruebas.db", location: 'default'});
+        db.transaction(CrearDB, errorDB);
   }
 
+
+  function select(tx) {
+       tx.executeSql('SELECT * FROM palabras WHERE categoria_padre=? ', [param], success, errorDB);
+
+  }
+  function success(tx, results){
+
+    var len = results.rows.length;
+   for (var i=0; i<len; i++){
+     palabras += results.rows.item(i).nombre;
+     imagenes += results.rows.item(i).imagen;
+     if(len>0){
+       palabras+='&';
+       imagenes+='&';
+   }
+   }
+    window.localStorage.setItem('palabras', palabras);
+    window.localStorage.setItem('imagenes', imagenes);
+    window.location.replace("juego.html");
+  }
 
   function CrearDB(tx) {
        tx.executeSql('CREATE TABLE IF NOT EXISTS categorias(id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT NOT NULL, categoria_padre INTEGER NOT NULL, imagen TEXT NOT NULL)');
@@ -103,7 +125,7 @@ listado=listado.concat('<ons-col width="34vw" class="cell" tappable>'+
 '<div class="categorie"  onclick="funcion(\''+results.rows.item(i).id+'\')">  <img class="thumbnail" src="'+results.rows.item(i).imagen+'">'+
 '<span class="caption">'+results.rows.item(i).nombre+'</span></div></ons-col>');
  }
-  document.getElementById('lista').innerHTML =listado;
+    document.getElementById('lista').innerHTML =listado;
 }
 
 

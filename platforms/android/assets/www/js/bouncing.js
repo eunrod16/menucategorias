@@ -3,8 +3,13 @@ var canvas = document.getElementById("canvas"),
 		ctx = canvas.getContext("2d");
 		var x = document.getElementById("myInput");
 		var punteo=0;
-		var param  = window.localStorage.getItem('param');
-		var go = false;
+		var palabras  = window.localStorage.getItem('palabras');
+		var imagenes  = window.localStorage.getItem('imagenes');
+		var listpalabras = new Array();
+		var listimagenes = new Array();
+		var iterador=0;
+		var palabraactual;
+		var imagenactual;
 //
 
 // Now setting the width and height of the canvas
@@ -105,7 +110,8 @@ function VerifyColission(){
 function update() {
 	var state=VerifyColission();
 	//console.log(state);
-//	  document.getElementById('palabra').innerHTML =param;
+	document.getElementById('palabra').innerHTML =palabraactual;
+	document.getElementById("building").src=imagenactual;
 		clearCanvas();
 		ball.draw();
 		building.draw();
@@ -133,41 +139,27 @@ if(!state){
 			building.x--;
 		}else{
 			building.x=W;
+			if(iterador<3){
+				var i = iterador++;
+			palabraactual = listpalabras[i];
+			imagenactual = listimagenes[i];
+		}
 		}
 	}
 
 }
+function consultarbd (){
+		listpalabras = palabras.split("&");
+		palabraactual = listpalabras[iterador];
+		listimagenes = imagenes.split("&");
+		imagenactual = listimagenes[iterador];
 
-function consultarbd() {
-		var db = window.sqlitePlugin.openDatabase({name: "pruebas.db", location: 'default'});
-	  db.transaction(CrearDB, errorDB);
-//	alert("DENTRO");
-//	var cars  = window.localStorage.getItem('cars');
-//	document.getElementById('palabra').innerHTML =cars[1];
 }
 
-function CrearDB(tx) {
-	alert("entro2");
-	//	 tx.executeSql('SELECT * FROM palabras WHERE categoria_padre=?', [1], ListarDB, errorDB);
-}
-
-function ListarDB(tx, results) {
-		alert("entro3");
-  /*var len = results.rows.length;
-  var listado ='';
- for (var i=0; i<len; i++){
- }
-  document.getElementById('palabra').innerHTML =results.rows.item(0).nombre;
-*/
-}
-
-function errorDB(tx, err) {
- alert("Error de insert: "+err);
-}
 
 // Now, the animation time!
 // in setInterval, 1000/x depicts x fps! So, in this casse, we are aiming for 60fps for smoother animations.
-//setInterval(update, 1000/60);
+setInterval(update, 1000/60);
 consultarbd();
 
 
