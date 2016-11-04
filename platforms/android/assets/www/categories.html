@@ -17,13 +17,6 @@
         <ons-back-button id="btn-back">Regresar</ons-back-button>
       </div>
       <div class="center">Elige una categoría</div>
-      <!--
-      <div class="right">
-        <ons-toolbar-button>
-          <ons-icon icon="md-menu"></ons-icon>
-        </ons-toolbar-button>
-      </div>
-    -->
     </ons-toolbar>
     <div style="text-align:center;">
       <ons-row id ="lista">
@@ -48,7 +41,8 @@
     var param;
 function funcion(value){
     param = value;
-    var db = window.sqlitePlugin.openDatabase({name: "pruebas.db", location: 'default'});
+    alert(param);
+    var db = window.sqlitePlugin.openDatabase({name: "pruebas3.db", location: 'default'});
     db.transaction(select, errorDB);
 
 }
@@ -58,7 +52,7 @@ function funcion(value){
   });
 
   function onDeviceReady() {
-        var db = window.sqlitePlugin.openDatabase({name: "pruebas.db", location: 'default'});
+        var db = window.sqlitePlugin.openDatabase({name: "pruebas3.db", location: 'default'});
         db.transaction(CrearDB, errorDB);
   }
 
@@ -78,6 +72,7 @@ function funcion(value){
        imagenes+='&';
    }
    }
+    alert(palabras);
     window.localStorage.setItem('palabras', palabras);
     window.localStorage.setItem('imagenes', imagenes);
     window.location.replace("juego.html");
@@ -110,10 +105,16 @@ function Insert(tx, results) {
 function InsertarPalabras(tx, results) {
   var id_ropa = results.rows.item(0).id;
   var id_familia = results.rows.item(1).id;
+  alert("id en insert"+id_familia);
   tx.executeSql('INSERT INTO palabras(nombre, categoria_padre, imagen) VALUES (?,?,?)', ['Sudadero', id_ropa,'img/ropa.jpg']);
   tx.executeSql('INSERT INTO palabras(nombre, categoria_padre, imagen) VALUES (?,?,?)', ['Pantalon', id_ropa,'img/pantalon.jpg']);
   tx.executeSql('INSERT INTO palabras(nombre, categoria_padre, imagen) VALUES (?,?,?)', ['Camisa', id_ropa,'img/camisa.png']);
   tx.executeSql('INSERT INTO palabras(nombre, categoria_padre, imagen) VALUES (?,?,?)', ['Calcetines', id_ropa,'img/calcetines.jpg']);
+  tx.executeSql('INSERT INTO palabras(nombre, categoria_padre, imagen) VALUES (?,?,?)', ['Padre', id_familia,'img/padre.jpg']);
+  tx.executeSql('INSERT INTO palabras(nombre, categoria_padre, imagen) VALUES (?,?,?)', ['Madre', id_familia,'img/madre.jpg']);
+  tx.executeSql('INSERT INTO palabras(nombre, categoria_padre, imagen) VALUES (?,?,?)', ['Abuelo', id_familia,'img/abuelo.png']);
+  tx.executeSql('INSERT INTO palabras(nombre, categoria_padre, imagen) VALUES (?,?,?)', ['Abuela', id_familia,'img/abuela.jpg']);
+  tx.executeSql('INSERT INTO palabras(nombre, categoria_padre, imagen) VALUES (?,?,?)', ['Bebé', id_familia,'img/bebe.jpg']);
   tx.executeSql('SELECT * FROM categorias', [], ListarDB, errorDB);
 }
 

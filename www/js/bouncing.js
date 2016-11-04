@@ -14,6 +14,8 @@ var canvas = document.getElementById("canvas"),
 		var imagen2;
 		var palabra1;
 		var palabra2;
+		var buena = false;
+		var Buildcorrecto = 0;
 
 //
 
@@ -32,7 +34,7 @@ canvas.height = H; canvas.width = W;
 // Lets define some variables first
 
 var ball = {},
-		gravity = 0.1,
+		gravity = 0.2,
 		bounceFactor = 0.7;
 
 // The ball object
@@ -98,6 +100,16 @@ building2 = {
 	}
 };
 
+estrella = {
+	x: W/2,
+	y: H/2,
+
+	draw: function() {
+		// Here, we'll first begin drawing the path and then use the arc() function to draw the circle. The arc function accepts 6 parameters, x position, y position, radius, start angle, end angle and a boolean for anti-clockwise direction.
+		var img=document.getElementById("estrella");
+		ctx.drawImage(img,this.x, this.y,60,60);
+	}
+};
 // When we do animations in canvas, we have to repaint the whole canvas in each frame. Either clear the whole area or paint it with some color. This helps in keeping the area clean without any repetition mess.
 // So, lets create a function that will do it for us.
 function clearCanvas() {
@@ -116,13 +128,38 @@ function VerifyColission(){
 	var IzqBuild2 = building2.x;
 	var SupBuild2= building2.y;
 	var InfBuild2 = building2.y + building2.h;
-	if(DerBuild> IzqBall &&  IzqBuild < DerBall && SupBuild < InfBall){
-		 document.getElementById('puntuacion').innerHTML =document.getElementById("building").value;
+	if(DerBuild> (IzqBall+25) &&  IzqBuild < (DerBall-25) && SupBuild < (InfBall-25)){
+		 var valor = document.getElementById("building").value;
+		 if(valor==palabraactual&&buena==false){
+			 punteo++;
+			 document.getElementById('puntuacion').innerHTML = punteo;
+			 document.getElementById("building").src ="";
+			 buena = true;
+			 Buildcorrecto =1;
+		 }
+		 else if (valor != palabraactual){
+		//	 document.getElementById('puntuacion').innerHTML = punteo--;
+			 window.localStorage.setItem('puntuacion', punteo);
+			 window.location = "loose.html";
+		 }
+
 		return false;
 
 	}
-	if(DerBuild2> IzqBall &&  IzqBuild2 < DerBall && SupBuild2 < InfBall && InfBuild2 > SupBall ){
-		document.getElementById('puntuacion').innerHTML =document.getElementById("building2").value;
+	if(DerBuild2> (IzqBall+25) &&  IzqBuild2 < (DerBall-25) && SupBuild2 < (InfBall-25) && InfBuild2 > (SupBall+25) ){
+		var valor = document.getElementById("building2").value;
+		if(valor==palabraactual&& buena==false){
+			punteo++;
+			document.getElementById('puntuacion').innerHTML = punteo;
+			document.getElementById("building2").src ="";
+			buena = true;
+			Buildcorrecto =2;
+		}
+		else if (valor != palabraactual){
+	//		document.getElementById('puntuacion').innerHTML = punteo--;
+			window.localStorage.setItem('puntuacion', punteo);
+			window.location = "loose.html";
+		}
 	 return false;
 
 	}
@@ -137,15 +174,21 @@ function update() {
 	var state=VerifyColission();
 	//console.log(state);
 	document.getElementById('palabra').innerHTML =palabraactual;
-	document.getElementById("building").src=imagen1;
-	document.getElementById("building").value = palabra1;
-	document.getElementById("building2").src=imagen2;
-	document.getElementById("building2").value = palabra2;
+	if(Buildcorrecto!=1){
+		document.getElementById("building").src=imagen1;
+		document.getElementById("building").value = palabra1;
+	}
+	if (Buildcorrecto !=2){
+		document.getElementById("building2").src=imagen2;
+		document.getElementById("building2").value = palabra2;
+	}
+
 		clearCanvas();
 		ball.draw();
 		building.draw();
 		building2.draw();
-if(!state){
+
+
 		// Now, lets make the ball move by adding the velocity vectors to its position
 		if(ball.y<H){
 			ball.y += ball.vy;
@@ -165,30 +208,34 @@ if(!state){
 			console.log('fondo');
 		}
 
-		if(ball.y -20 < 0) {
+		if(ball.y -5 < 0) {
 			// First, reposition the ball on top of the floor and then bounce it!
-			ball.y = 20;
+			ball.y = 5;
 			//ball.vy *= -bounceFactor;
 			// The bounceFactor variable that we created decides the elasticity or how elastic the collision will be. If it's 1, then the collision will be perfectly elastic. If 0, then it will be inelastic.
 			console.log('top');
 		}
+		if(buena){
+			estrella.y = estrella.y -5;
+			estrella.draw();
+		}
 		if(building.x+50>0){
-			building.x = building.x -1;
-			building2.x = building2.x -1.4;
+			building.x = building.x -2;
+			building2.x = building2.x -2.5;
 		}else{
 			building.x=W;
 			building2.x=W;
-			if(iterador<3){
-				consultarbd();
-				iterador++;
+			estrella.y = H/2;
+			buena = false;
+			Buildcorrecto=0;
+			consultarbd();
 		}
-		}
-	}
+
 
 }
 function consultarbd (){
 		listpalabras = palabras.split("&");
-		var len = listpalabras.length-2;
+		var len = listpalabras.length-1;
 		var i1 = Math.floor((Math.random()*len)); //Primer random de palabraactual
 		palabraactual = listpalabras[i1];
 		listimagenes = imagenes.split("&");
@@ -196,7 +243,7 @@ function consultarbd (){
 		while(i2 == i1){
 			i2 = Math.floor((Math.random()*len)); //Palabra incorrecta
 		}
-		var turno = Math.floor((Math.random())); //Random 0 1
+		var turno = Math.floor((Math.random()*2)); //Random 0 1
 		if (turno ==0){
 			imagen2 = listimagenes[i1];
 			palabra2 = listpalabras[i1];
