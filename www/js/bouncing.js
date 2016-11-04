@@ -7,9 +7,14 @@ var canvas = document.getElementById("canvas"),
 		var imagenes  = window.localStorage.getItem('imagenes');
 		var listpalabras = new Array();
 		var listimagenes = new Array();
+		var listpasadas = new Array ();
 		var iterador=0;
 		var palabraactual;
-		var imagenactual;
+		var imagen1;
+		var imagen2;
+		var palabra1;
+		var palabra2;
+
 //
 
 // Now setting the width and height of the canvas
@@ -27,7 +32,7 @@ canvas.height = H; canvas.width = W;
 // Lets define some variables first
 
 var ball = {},
-		gravity = 0.2,
+		gravity = 0.1,
 		bounceFactor = 0.7;
 
 // The ball object
@@ -43,7 +48,7 @@ ball = {
 
 	// Velocity components
 	vx: 0,
-	vy: 1,
+	vy: 0.5,
 	w: 300,
 	h: 170,
 	r: 170,
@@ -61,10 +66,10 @@ ball = {
 };
 building = {
 	x: 0,
-	y: H-256,
+	y: H-160,
 
-	w: 80,
-	h: 256,
+	w: 130,
+	h: 180,
 	// Velocity components
 	vx: 0,
 	vy: 1,
@@ -72,12 +77,24 @@ building = {
 	draw: function() {
 		// Here, we'll first begin drawing the path and then use the arc() function to draw the circle. The arc function accepts 6 parameters, x position, y position, radius, start angle, end angle and a boolean for anti-clockwise direction.
 		var img=document.getElementById("building");
-		ctx.drawImage(img,this.x, this.y);
-	/*	ctx.beginPath();
-		ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
-		ctx.fillStyle = this.color;
-		ctx.fill();
-		ctx.closePath();*/
+		ctx.drawImage(img,this.x, this.y,130,160);
+	}
+};
+
+building2 = {
+	x: 0,
+	y: 0,
+
+	w: 130,
+	h: 180,
+	// Velocity components
+	vx: 0,
+	vy: 1,
+
+	draw: function() {
+		// Here, we'll first begin drawing the path and then use the arc() function to draw the circle. The arc function accepts 6 parameters, x position, y position, radius, start angle, end angle and a boolean for anti-clockwise direction.
+		var img=document.getElementById("building2");
+		ctx.drawImage(img,this.x, this.y,130,160);
 	}
 };
 
@@ -95,9 +112,18 @@ function VerifyColission(){
 	var IzqBuild = building.x;
 	var SupBuild= building.y;
 	var InfBuild = building.y + building.h;
+	var DerBuild2 = building2.x + building2.w;
+	var IzqBuild2 = building2.x;
+	var SupBuild2= building2.y;
+	var InfBuild2 = building2.y + building2.h;
 	if(DerBuild> IzqBall &&  IzqBuild < DerBall && SupBuild < InfBall){
-		 document.getElementById('puntuacion').innerHTML =punteo++;
-		return true;
+		 document.getElementById('puntuacion').innerHTML =document.getElementById("building").value;
+		return false;
+
+	}
+	if(DerBuild2> IzqBall &&  IzqBuild2 < DerBall && SupBuild2 < InfBall && InfBuild2 > SupBall ){
+		document.getElementById('puntuacion').innerHTML =document.getElementById("building2").value;
+	 return false;
 
 	}
 	else{
@@ -111,10 +137,14 @@ function update() {
 	var state=VerifyColission();
 	//console.log(state);
 	document.getElementById('palabra').innerHTML =palabraactual;
-	document.getElementById("building").src=imagenactual;
+	document.getElementById("building").src=imagen1;
+	document.getElementById("building").value = palabra1;
+	document.getElementById("building2").src=imagen2;
+	document.getElementById("building2").value = palabra2;
 		clearCanvas();
 		ball.draw();
 		building.draw();
+		building2.draw();
 if(!state){
 		// Now, lets make the ball move by adding the velocity vectors to its position
 		if(ball.y<H){
@@ -135,14 +165,22 @@ if(!state){
 			console.log('fondo');
 		}
 
+		if(ball.y -20 < 0) {
+			// First, reposition the ball on top of the floor and then bounce it!
+			ball.y = 20;
+			//ball.vy *= -bounceFactor;
+			// The bounceFactor variable that we created decides the elasticity or how elastic the collision will be. If it's 1, then the collision will be perfectly elastic. If 0, then it will be inelastic.
+			console.log('top');
+		}
 		if(building.x+50>0){
-			building.x--;
+			building.x = building.x -1;
+			building2.x = building2.x -1.4;
 		}else{
 			building.x=W;
+			building2.x=W;
 			if(iterador<3){
-				var i = iterador++;
-			palabraactual = listpalabras[i];
-			imagenactual = listimagenes[i];
+				consultarbd();
+				iterador++;
 		}
 		}
 	}
@@ -150,9 +188,28 @@ if(!state){
 }
 function consultarbd (){
 		listpalabras = palabras.split("&");
-		palabraactual = listpalabras[iterador];
+		var len = listpalabras.length-2;
+		var i1 = Math.floor((Math.random()*len)); //Primer random de palabraactual
+		palabraactual = listpalabras[i1];
 		listimagenes = imagenes.split("&");
-		imagenactual = listimagenes[iterador];
+		var i2=i1;
+		while(i2 == i1){
+			i2 = Math.floor((Math.random()*len)); //Palabra incorrecta
+		}
+		var turno = Math.floor((Math.random())); //Random 0 1
+		if (turno ==0){
+			imagen2 = listimagenes[i1];
+			palabra2 = listpalabras[i1];
+			imagen1 = listimagenes[i2];
+			palabra1 = listpalabras[i2];
+		}
+		else{
+			imagen2 = listimagenes[i2];
+			palabra2 = listpalabras[i2];
+			imagen1 = listimagenes[i1];
+			palabra1 = listpalabras[i1];
+		}
+
 
 }
 
